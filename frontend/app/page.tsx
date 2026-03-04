@@ -16,7 +16,8 @@ async function fetchDashboard(): Promise<DashboardData> {
   const base =
     process.env.DATA_BASE_URL ||
     "https://raw.githubusercontent.com/OWNER/REPO/main/data_exports";
-  const url = `${base.replace(/\\/$/, "")}/dashboard.json`;
+  const normalizedBase = base.endsWith("/") ? base.slice(0, -1) : base;
+  const url = `${normalizedBase}/dashboard.json`;
   try {
     const resp = await fetch(url, { next: { revalidate: 1800 } });
     if (!resp.ok) return defaultData;
@@ -70,4 +71,3 @@ export default async function Page() {
     </main>
   );
 }
-
