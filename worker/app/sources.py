@@ -35,11 +35,26 @@ def fetch_fund_snapshot(fund_code: str, timeout_sec: int = 15) -> dict[str, Any]
 
 
 def fetch_news(
-    news_source_config: dict[str, Any], per_feed_limit: int = 30
+    news_source_config: dict[str, Any] | list[dict[str, Any]], per_feed_limit: int = 30
 ) -> tuple[list[dict[str, str]], list[str]]:
     items: list[dict[str, str]] = []
     errors: list[str] = []
-    for source in news_source_config.get("sources", []):
+    sources: list[dict[str, Any]]
+    if isinstance(news_source_config, list):
+        sources = news_source_config
+    elif isinstance(news_source_config, dict):
+        raw_sources = news_source_config.get("sources", [])
+        sources = raw_sources if isinstance(raw_sources, list) else []
+    else:
+        errors.append(
+            "Invalid news_sources.json format: expected object with 'sources' list or a list of sources."
+        )
+        return items, errors
+
+    for source in sources:
+        if not isinstance(source, dict):
+            errors.append("Invalid news source item: each source must be an object.")
+            continue
         rss_url = source.get("rss_url", "").strip()
         if not rss_url:
             errors.append(f"News source missing rss_url: {source.get('name', 'unknown')}")

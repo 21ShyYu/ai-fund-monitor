@@ -13,8 +13,20 @@ ROOT_DIR = Path(__file__).resolve().parents[2]
 
 
 def _load_json(path: Path) -> Any:
+    if not path.exists():
+        raise FileNotFoundError(
+            f"Config file not found: {path}. "
+            f"Please create it under {ROOT_DIR / 'shared' / 'config'}."
+        )
     with path.open("r", encoding="utf-8") as f:
         return json.load(f)
+
+
+def _resolve_env_path(env_name: str, default_path: Path) -> Path:
+    raw = os.getenv(env_name, str(default_path)).strip()
+    p = Path(raw)
+    # Resolve relative paths against project root instead of current working directory.
+    return (ROOT_DIR / p).resolve() if not p.is_absolute() else p
 
 
 @dataclass
@@ -36,10 +48,10 @@ class Settings:
     @classmethod
     def load(cls) -> "Settings":
         load_dotenv(ROOT_DIR / "worker" / ".env")
-        db_path = Path(os.getenv("DB_PATH", str(ROOT_DIR / "worker" / "runtime" / "fund.db")))
-        model_dir = Path(os.getenv("MODEL_DIR", str(ROOT_DIR / "worker" / "runtime" / "models")))
-        export_dir = Path(os.getenv("EXPORT_DIR", str(ROOT_DIR / "data_exports")))
-        config_dir = Path(os.getenv("CONFIG_DIR", str(ROOT_DIR / "shared" / "config")))
+        db_path = _resolve_env_path("DB_PATH", ROOT_DIR / "worker" / "runtime" / "fund.db")
+        model_dir = _resolve_env_path("MODEL_DIR", ROOT_DIR / "worker" / "runtime" / "models")
+        export_dir = _resolve_env_path("EXPORT_DIR", ROOT_DIR / "data_exports")
+        config_dir = _resolve_env_path("CONFIG_DIR", ROOT_DIR / "shared" / "config")
         return cls(
             db_path=db_path,
             model_dir=model_dir,
@@ -64,4 +76,3 @@ class Settings:
 
     def load_news_sources(self) -> dict[str, Any]:
         return _load_json(self.config_dir / "news_sources.json")
-
