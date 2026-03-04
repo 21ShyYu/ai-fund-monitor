@@ -1,0 +1,14 @@
+# Use: crontab -e
+# Times use Asia/Shanghai timezone.
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+CRON_TZ=Asia/Shanghai
+
+# 14:00 daily
+0 14 * * * cd /home/ubuntu/ai-fund-monitor/worker && . .venv/bin/activate && python scripts/run_once.py >> /home/ubuntu/ai-fund-monitor/worker/runtime/cron.log 2>&1
+
+# 22:00 daily
+0 22 * * * cd /home/ubuntu/ai-fund-monitor/worker && . .venv/bin/activate && python scripts/run_once.py >> /home/ubuntu/ai-fund-monitor/worker/runtime/cron.log 2>&1
+
+# Optional health check every morning
+30 9 * * * tail -n 50 /home/ubuntu/ai-fund-monitor/worker/runtime/cron.log

@@ -1,0 +1,15 @@
+{
+  "risk": {
+    "max_drawdown_limit": 0.08
+  },
+  "signal_rules": {
+    "add_position_pred_return_gt": 0.012,
+    "add_position_confidence_gte": 70,
+    "add_position_hot_risk_lt": 0.4,
+    "reduce_range_low": -0.008,
+    "reduce_range_high": 0.005,
+    "reduce_position_confidence_lt": 60,
+    "reduce_position_hot_risk_gte": 0.5,
+    "clear_position_pred_return_lt": -0.015
+  }
+}

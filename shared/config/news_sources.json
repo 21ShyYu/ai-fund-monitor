@@ -1,0 +1,19 @@
+{
+  "sources": [
+    {
+      "name": "中国证监会",
+      "category": "policy",
+      "rss_url": "http://www.csrc.gov.cn/searchList/a1a078ee0bc54721a4f5f25017f6766f?channelName=%E8%A6%81%E9%97%BB%E5%8A%A8%E6%80%81"
+    },
+    {
+      "name": "新浪财经基金",
+      "category": "media",
+      "rss_url": "https://finance.sina.com.cn/fund/feed.xml"
+    },
+    {
+      "name": "东方财富基金",
+      "category": "media",
+      "rss_url": "https://rsshub.app/eastmoney/news/cjpl"
+    }
+  ]
+}

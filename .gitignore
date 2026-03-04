@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Node
+frontend/node_modules/
+frontend/.next/
+frontend/.vercel/
+
+# Runtime
+*.log
+worker/runtime/
+worker/.env
+frontend/.env.local
+frontend/.env
+
+# OS
+.DS_Store
+Thumbs.db
