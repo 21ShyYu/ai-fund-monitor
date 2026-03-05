@@ -2,16 +2,41 @@
   {
     "code": "161725",
     "name": "招商中证白酒指数(LOF)A",
-    "enabled": true
+    "enabled": false
   },
   {
     "code": "110022",
     "name": "易方达消费行业股票",
-    "enabled": true
+    "enabled": false
   },
   {
     "code": "163406",
     "name": "兴全合润混合",
+    "enabled": false
+  },
+  {
+    "code": "025491",
+    "name": "平安中证卫星C",
+    "enabled": true
+  },
+  {
+    "code": "015790",
+    "name": "永赢高端C",
+    "enabled": true
+  },
+  {
+    "code": "019670",
+    "name": "创新药",
+    "enabled": true
+  },
+  {
+    "code": "011103",
+    "name": "天弘中证光伏指数C",
+    "enabled": true
+  },
+  {
+    "code": "002963",
+    "name": "易方达黄金",
     "enabled": true
   }
 ]
