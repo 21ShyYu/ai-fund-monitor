@@ -91,15 +91,49 @@ def decide_signal(
 def calc_news_scores(news_items: list[dict[str, Any]]) -> tuple[float, float]:
     if not news_items:
         return 0.5, 0.2
+
     text = " ".join((x.get("title", "") + " " + x.get("summary", "")).lower() for x in news_items)
-    positive_kw = ["上涨", "回暖", "利好", "增长", "修复", "反弹", "improve", "growth"]
-    negative_kw = ["下跌", "暴跌", "利空", "风险", "波动", "监管", "tightening", "risk"]
+    positive_kw = [
+        "上涨",
+        "走强",
+        "回暖",
+        "利好",
+        "增长",
+        "降息",
+        "缓和",
+        "达成协议",
+        "improve",
+        "growth",
+        "easing",
+        "ceasefire",
+        "deal",
+    ]
+    negative_kw = [
+        "下跌",
+        "暴跌",
+        "利空",
+        "风险",
+        "波动",
+        "战争",
+        "冲突",
+        "地缘",
+        "制裁",
+        "通胀",
+        "加息",
+        "衰退",
+        "tightening",
+        "risk",
+        "war",
+        "sanction",
+        "recession",
+        "inflation",
+    ]
+
     pos_hits = sum(text.count(k) for k in positive_kw)
     neg_hits = sum(text.count(k) for k in negative_kw)
     total = max(1, pos_hits + neg_hits)
     sentiment = 0.5 + (pos_hits - neg_hits) / (2 * total)
     sentiment = max(0.0, min(1.0, sentiment))
-    # More negative concentration means higher hot risk.
     hot_risk = max(0.0, min(1.0, neg_hits / total))
     return sentiment, hot_risk
 
@@ -115,4 +149,3 @@ def _risk_hint(pred_vol: float, hot_risk: float, dd: float, dd_limit: float) -> 
     if not hints:
         hints.append("Risk is within configured tolerance.")
     return " ".join(hints)
-

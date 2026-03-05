@@ -26,14 +26,22 @@ def export_frontend_json(
 
 
 def calc_hot_terms(news_items: list[dict[str, Any]], top_k: int = 50) -> list[dict[str, Any]]:
-    stop_words = {"的", "了", "是", "和", "在", "与", "及", "就", "对", "the", "and", "for", "to", "of"}
+    stop_words = {
+        "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?",
+        "the", "and", "for", "to", "of", "with", "from", "that", "this", "will",
+    }
     tokens: list[str] = []
     for row in news_items[:300]:
         text = f"{row.get('title', '')} {row.get('summary', '')}"
         for t in _simple_cut(text):
-            if len(t) < 2 or t.lower() in stop_words:
+            low = t.lower()
+            if len(low) < 2 or len(low) > 24:
                 continue
-            tokens.append(t.lower())
+            if low in stop_words:
+                continue
+            if low.isdigit():
+                continue
+            tokens.append(low)
     counted = Counter(tokens).most_common(top_k)
     return [{"term": k, "count": v} for k, v in counted]
 
@@ -50,9 +58,9 @@ def _run(cmd: list[str], cwd: Path, check: bool = True) -> None:
 
 def _simple_cut(text: str) -> list[str]:
     output: list[str] = []
-    token = []
+    token: list[str] = []
     for ch in text:
-        if ch.isalnum() or "\u4e00" <= ch <= "\u9fff":
+        if ch.isalnum() or "一" <= ch <= "鿿":
             token.append(ch)
         else:
             if token:
@@ -61,4 +69,3 @@ def _simple_cut(text: str) -> list[str]:
     if token:
         output.append("".join(token))
     return output
-

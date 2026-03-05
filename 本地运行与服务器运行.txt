@@ -1,0 +1,88 @@
+PS C:\Users\SHY\Desktop\Coding\AI基金预测系统>   git status
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   DEPLOYMENT_CN.md
+        modified:   ENV_TEMPLATE.md
+        modified:   shared/config/news_sources.json
+        modified:   worker/app/llm.py
+        modified:   worker/app/pipeline.py    
+        modified:   worker/app/sources.py     
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+        update-main.bundle
+        worker/app/model_wrappers.py
+        worker/scripts/fetch_fund_history.py  
+        worker/scripts/train_models.py        
+        worker/scripts/train_models_from_csv.py
+        "\345\256\236\346\227\266\346\233\264\346\226\260\347\275\221\347\253\231\344\270\216\351\243\236\344\271\246\345\256\232\346\227\266\345\217\221\351\200\201\344\277\235\345\247\206\347\272\247\350\257\264\346\230\216.md" 
+
+no changes added to commit (use "git add" and/or "git commit -a")
+PS C:\Users\SHY\Desktop\Coding\AI基金预测系统>
+ git add worker/app/sources.py worker/app/pipeline.py worker/app/llm.py shared/config/      
+>>   news_sources.json "实时更新网站与飞书定时发送保姆级说明.md"
+warning: in the working copy of 'worker/app/sources.py', LF will be replaced by CRLF the next time Git touches it
+news_sources.json : 无法将“news_sources.json
+”项识别为 cmdlet、函数、脚本文件或可运行程序  
+的名称。请检查名称的拼写，如果包括路径，请确  
+保路径正确，然后再试一次。
+所在位置 行:2 字符: 3
++   news_sources.json "实时更新网站与飞书定时 
+发送保姆级说明.md"
++   ~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound  
+   : (news_sources.json:String) [], Command   
+  NotFoundException
+    + FullyQualifiedErrorId : CommandNotFoun  
+   dException
+
+PS C:\Users\SHY\Desktop\Coding\AI基金预测系统>
+ git add worker/app/sources.py worker/app/pipeline.py worker/app/llm.py shared/config/news_sources.json "实时更新网站与飞书定时发送保姆级 说明.md"         " 
+warning: in the working copy of '实时更新网站
+与飞书定时发送保姆级说明.md', LF will be replaced by CRLF the next time Git touches it      
+PS C:\Users\SHY\Desktop\Coding\AI基金预测系统>
+  git commit -m "fix: restore political news crawl and decouple llm from xgboost"
+[main cfcc3b1] fix: restore political news crawl and decouple llm from xg346\233\264\346\226\260\347\275\221\347\253\231\344\270\216\351\243\236\344\271\246\345\256\232\346\227\266\345\217\221\351\200\201\344\277\235\345\247\206\347\272\247\350\257\264\346\230\216.md"
+PS C:\Users\SHY\Desktop\Coding\AI基金预测系统> git pull --rebase origin main
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+P                    op\Coding\AI基金预测系统>
+PS C:\Users\SHY\Desktop\Coding\AI基金预测系统> git push origin main
+Enumerating objects: 20, done.
+Counting objects: 100% (20/20), done.
+Delta compression using up to 16 threads
+Compressing objects: 100% (10/10), done.
+Writing objects: 100% (11/11), 8.22 KiB | 2.74 MiB/s, done.
+Total 11 (delta 4), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (4/4), completed with 4 local objects.    
+To https://github.com/21ShyYu/ai-fund-monitor.git
+   9443c4b..cfcc3b1  main -> main
+
+
+服务器运行：root@iZ2ze8reac5mkk3wfyh4kyZ:~#  cd /root/ai-fund-monitor
+root@iZ2ze8reac5mkk3wfyh4kyZ:~/ai-fund-monitor# git fetch origin
+remote: Enumerating objects: 27, done.
+remote: Counting objects: 100% (27/27), done.
+remote: Compressing objects: 100% (10/10), done.
+remote: Total 17 (delta 9), reused 14 (delta 6), pack-reused 0 (from 0)
+Unpacking objects: 100% (17/17), 9.31 KiB | 794.00 KiB/s, done.
+From https://github.com/21ShyYu/ai-fund-monitor
+   3c69117..cfcc3b1  main       -> origin/main
+root@iZ2ze8reac5mkk3wfyh4kyZ:~/ai-fund-monitor# git checkout main
+M       data_exports/dashboard.json
+M       shared/config/news_sources.json
+M       worker/app/config.py
+M       worker/app/llm.py
+M       worker/app/pipeline.py
+M       worker/app/sources.py
+Already on 'main'
+Your branch is behind 'origin/main' by 2 commits, and can be fast-forwarded.
+  (use "git pull" to update your local branch)
+root@iZ2ze8reac5mkk3wfyh4kyZ:~/ai-fund-monitor# git pull --rebase origin main
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+root@iZ2ze8reac5mkk3wfyh4kyZ:~/ai-fund-monitor# 

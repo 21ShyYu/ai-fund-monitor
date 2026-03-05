@@ -8,7 +8,7 @@
       "link_patterns": [
         "https?://www[.]gov[.]cn/yaowen/liebiao/[0-9]{6}/content_[0-9]+[.]htm"
       ],
-      "max_items": 35,
+      "max_items": 15,
       "require_political": false
     },
     {
@@ -20,7 +20,39 @@
         "https?://[^/]*people[.]com[.]cn/[0-9]{4}/n1/[0-9]{4}/[0-9]{4}/c[0-9]+-[0-9]+[.]html",
         "https?://[^/]*people[.]com[.]cn/n1/[0-9]{4}/[0-9]{4}/c[0-9]+-[0-9]+[.]html"
       ],
+      "max_items": 12,
+      "require_political": false
+    },
+    {
+      "name": "Investing-Global Macro",
+      "category": "macro",
+      "mode": "rss",
+      "rss_url": "https://www.investing.com/rss/news.rss",
       "max_items": 30,
+      "require_political": false
+    },
+    {
+      "name": "Investing-Most Popular",
+      "category": "macro",
+      "mode": "rss",
+      "rss_url": "https://www.investing.com/rss/news_285.rss",
+      "max_items": 25,
+      "require_political": false
+    },
+    {
+      "name": "MarketWatch Top",
+      "category": "macro",
+      "mode": "rss",
+      "rss_url": "https://www.marketwatch.com/rss/topstories",
+      "max_items": 25,
+      "require_political": false
+    },
+    {
+      "name": "CNBC World",
+      "category": "macro",
+      "mode": "rss",
+      "rss_url": "https://www.cnbc.com/id/100003114/device/rss/rss.html",
+      "max_items": 25,
       "require_political": false
     }
   ]

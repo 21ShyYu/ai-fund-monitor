@@ -10,7 +10,7 @@ EXPORT_DIR=./data_exports
 CONFIG_DIR=./shared/config
 
 # 飞书
-FEISHU_WEBHOOK=https://open.feishu.cn/open-apis/bot/v2/hook/xxxxxxxx
+FEISHU_WEBHOOK=https://open.feishu.cn/open-apis/bot/v2/hook/4839f031-a794-41be-b389-0e46d6e35b42
 
 # LLM（DeepSeek/Qwen 二选一）
 LLM_PROVIDER=deepseek
