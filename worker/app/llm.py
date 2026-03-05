@@ -19,17 +19,20 @@ def generate_report(
     if not api_key:
         raise LLMError("Missing LLM_API_KEY")
 
-    url = f"{base_url.rstrip('/')}/chat/completions"
     headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
     system_prompt = (
-        "You are a prudent fund trading assistant. "
-        "Output concise Chinese summary with sections: 总览, 风险提示, 建议动作."
+        "你是谨慎的基金观察助手。"
+        "你只能根据最近净值变化和当前时政热点给出研判。"
+        "严禁引用或推断任何XGBoost或其他机器学习模型结果。"
+        "输出中文，结构固定为：总览、风险提示、建议动作。"
     )
     user_prompt = (
-        "根据以下结构化数据生成中文总结，必须包含置信度和风险提示，不要夸大收益，不要保证盈利。\n"
-        f"{input_payload}"
+        "请根据输入数据给出简洁、可执行的中文研判。"
+        "不要承诺收益，不要使用绝对化表达。"
+        "每条建议都要体现不确定性与风险。"
+        f"\n\n输入数据:\n{input_payload}"
     )
-    body = {
+    chat_body = {
         "model": model,
         "messages": [
             {"role": "system", "content": system_prompt},
@@ -37,14 +40,46 @@ def generate_report(
         ],
         "temperature": 0.2,
     }
+    responses_body = {
+        "model": model,
+        "input": [
+            {
+                "role": "user",
+                "content": [{"type": "input_text", "text": f"{system_prompt}\n\n{user_prompt}"}],
+            }
+        ],
+        "temperature": 0.2,
+        "stream": False,
+    }
 
     try:
-        resp = requests.post(url, headers=headers, json=body, timeout=timeout_sec)
+        chat_url = f"{base_url.rstrip('/')}/chat/completions"
+        resp = requests.post(chat_url, headers=headers, json=chat_body, timeout=timeout_sec)
+        if resp.status_code == 404:
+            responses_url = f"{base_url.rstrip('/')}/responses"
+            resp = requests.post(responses_url, headers=headers, json=responses_body, timeout=timeout_sec)
         resp.raise_for_status()
         data = resp.json()
+
         content = data.get("choices", [{}])[0].get("message", {}).get("content", "").strip()
-        if not content:
-            raise LLMError("LLM response content is empty")
-        return content
+        if content:
+            return content
+
+        output_text = str(data.get("output_text", "")).strip()
+        if output_text:
+            return output_text
+        output = data.get("output", [])
+        if isinstance(output, list):
+            chunks: list[str] = []
+            for item in output:
+                for c in item.get("content", []) if isinstance(item, dict) else []:
+                    txt = c.get("text", "") if isinstance(c, dict) else ""
+                    if txt:
+                        chunks.append(str(txt))
+            merged = "\n".join(chunks).strip()
+            if merged:
+                return merged
+
+        raise LLMError("LLM response content is empty")
     except requests.RequestException as exc:
         raise LLMError(f"LLM request failed: {exc}") from exc

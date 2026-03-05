@@ -36,6 +36,7 @@ def run_pipeline() -> None:
         init_schema(conn, schema_sql)
 
         funds = settings.load_funds()
+        fund_name_map = {str(x.get("code", "")): str(x.get("name", "")) for x in funds}
         strategy = settings.load_strategy()
         news_sources = settings.load_news_sources()
         now = datetime.now().isoformat(timespec="seconds")
@@ -139,6 +140,7 @@ def run_pipeline() -> None:
             signals_payload.append(
                 {
                     "fund_code": x["fund_code"],
+                    "fund_name": fund_name_map.get(str(x["fund_code"]), ""),
                     "signal": x["signal"],
                     "signal_cn": CN_SIGNAL_MAP.get(x["signal"], x["signal"]),
                     "confidence": x["confidence"],
@@ -146,15 +148,47 @@ def run_pipeline() -> None:
                     "risk_hint": x["risk_hint"],
                 }
             )
+
+        llm_fund_payload = []
+        for fund in funds:
+            code = str(fund["code"])
+            prices = get_recent_prices(conn, code, limit=5)
+            if not prices:
+                continue
+            latest_price = prices[-1]
+            llm_fund_payload.append(
+                {
+                    "fund_code": code,
+                    "fund_name": fund_name_map.get(code, ""),
+                    "latest_nav": float(latest_price["nav"]),
+                    "latest_daily_change_pct": float(latest_price["daily_change_pct"]),
+                    "observed_at": str(latest_price["observed_at"]),
+                    "recent_nav_series": [round(float(x["nav"]), 6) for x in prices],
+                }
+            )
+        llm_news_payload = [
+            {
+                "published_at": str(x.get("published_at", "")),
+                "source": str(x.get("source", "")),
+                "title": str(x.get("title", "")),
+                "summary": str(x.get("summary", ""))[:160],
+            }
+            for x in recent_news[:20]
+        ]
+
         report = ""
-        if predicted_count > 0:
+        if llm_fund_payload:
             try:
                 report = generate_report(
                     api_key=settings.llm_api_key,
                     base_url=settings.llm_base_url,
                     model=settings.llm_model,
                     timeout_sec=settings.llm_timeout_sec,
-                    input_payload={"signals": signals_payload, "news_count": len(recent_news)},
+                    input_payload={
+                        "rule": "只允许基于最近净值和当前时政热点生成研判，不可引用XGBoost结果",
+                        "funds": llm_fund_payload,
+                        "political_news": llm_news_payload,
+                    },
                 )
             except Exception as exc:
                 msg = f"LLM report failed: {exc}"
@@ -187,19 +221,25 @@ def _send_feishu(
 ) -> None:
     lines = ["基金预测日报", ""]
     if signals_payload:
-        lines.append("信号结果：")
+        lines.append("XGBoost信号结果：")
         for x in signals_payload:
+            display_name = str(x.get("fund_name", "")).strip()
+            code = str(x["fund_code"])
+            name_with_code = f"{display_name}({code})" if display_name else code
             lines.append(
-                f"- {x['fund_code']}: {x['signal_cn']} | 置信度 {x['confidence']} | 预测收益 {x['pred_return_pct']}%"
+                f"- {name_with_code}: {x['signal_cn']} | 置信度 {x['confidence']} | 预测收益 {x['pred_return_pct']}%"
             )
     else:
-        lines.append("信号结果：无（本轮未生成有效预测）")
+        lines.append("XGBoost信号结果：无（本轮未生成有效预测）")
+
     if report:
         lines.extend(["", "LLM总结：", report])
     else:
         lines.extend(["", "LLM总结：未生成（请检查 LLM 配置或接口状态）"])
+
     if errors:
         lines.extend(["", "异常提示："])
         for e in errors[:20]:
             lines.append(f"- {e}")
+
     send_text(settings.feishu_webhook, "基金预测日报", "\n".join(lines))
